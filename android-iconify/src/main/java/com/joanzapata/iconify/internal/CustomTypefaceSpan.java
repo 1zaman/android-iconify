@@ -20,6 +20,8 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
 import static android.view.View.TEXT_DIRECTION_ANY_RTL;
 import static android.view.View.TEXT_DIRECTION_FIRST_STRONG;
+import static android.view.View.TEXT_DIRECTION_FIRST_STRONG_LTR;
+import static android.view.View.TEXT_DIRECTION_FIRST_STRONG_RTL;
 import static android.view.View.TEXT_DIRECTION_LOCALE;
 import static android.view.View.TEXT_DIRECTION_LTR;
 import static android.view.View.TEXT_DIRECTION_RTL;
@@ -162,6 +164,12 @@ public class CustomTypefaceSpan extends ReplacementSpan {
                 break;
             case TEXT_DIRECTION_LOCALE:
                 textDirectionHeuristic = TextDirectionHeuristics.LOCALE;
+                break;
+            case TEXT_DIRECTION_FIRST_STRONG_LTR:
+                textDirectionHeuristic = TextDirectionHeuristics.FIRSTSTRONG_LTR;
+                break;
+            case TEXT_DIRECTION_FIRST_STRONG_RTL:
+                textDirectionHeuristic = TextDirectionHeuristics.FIRSTSTRONG_RTL;
                 break;
         }
         CharSequence text = view.getText();

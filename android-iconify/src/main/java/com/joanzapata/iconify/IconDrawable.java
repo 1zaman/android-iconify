@@ -5,12 +5,14 @@ import android.content.Context;
 import android.graphics.*;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
+import android.util.LayoutDirection;
 import android.util.TypedValue;
 import android.view.View;
 import com.joanzapata.iconify.internal.IconFontDescriptorWrapper;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.os.Build.VERSION_CODES.M;
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
 
@@ -263,6 +265,9 @@ public class IconDrawable extends Drawable {
     @TargetApi(JELLY_BEAN_MR1)
     private boolean needMirroring() {
         if (isAutoMirrored()) {
+            if (SDK_INT >= M) {
+                return getLayoutDirection() == LayoutDirection.RTL;
+            }
             // Since getLayoutDirection() is hidden prior to Marshmallow, we
             // will try to get the layout direction from the View, which we will
             // assume is set as the callback. As the setLayoutDirection() method
