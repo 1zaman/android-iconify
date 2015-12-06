@@ -3,5 +3,6 @@
     <declare-styleable name="IconImageView">
         <attr name="iconName" format="string" />
         <attr name="iconColor" format="color" />
+        <attr name="iconSpin" format="boolean" />
     </declare-styleable>
 </resources>
