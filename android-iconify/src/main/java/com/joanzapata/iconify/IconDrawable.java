@@ -42,6 +42,13 @@ public final class IconDrawable extends Drawable implements Animatable {
             new int[] { 0x80FFFFFF, 0xFFFFFFFF }
     );
     private static final int ROTATION_DURATION = 2000;
+    // Font Awesome uses 8-step rotation for pulse, and
+    // it seems to have the only pulsing spinner. If
+    // spinners with different pulses are introduced at
+    // some point, then a pulse property can be
+    // implemented for the icons.
+    private static final int ROTATION_PULSES = 8;
+    private static final int ROTATION_PULSE_DURATION = ROTATION_DURATION / ROTATION_PULSES;
     private static final int ANDROID_ACTIONBAR_ICON_SIZE_DP = 24;
     private static final Rect TEMP_DRAW_BOUNDS = new Rect();
 
@@ -55,6 +62,7 @@ public final class IconDrawable extends Drawable implements Animatable {
     private final String text;
     private final Rect drawBounds = new Rect();
     private float centerX, centerY;
+    private Runnable invalidateRunnable;
 
     private static Icon findValidIconForKey(String iconKey) {
         Icon icon = Iconify.findIconForKey(iconKey);
@@ -210,6 +218,18 @@ public final class IconDrawable extends Drawable implements Animatable {
      * @return The current IconDrawable for chaining.
      */
     public IconDrawable spin() {
+        iconState.pulse = false;
+        start();
+        return this;
+    }
+
+    /**
+     * Start a pulse animation on this drawable. Call {@link #stop()}
+     * to stop it.
+     * @return The current IconDrawable for chaining.
+     */
+    public IconDrawable pulse() {
+        iconState.pulse = true;
         start();
         return this;
     }
@@ -265,9 +285,30 @@ public final class IconDrawable extends Drawable implements Animatable {
             long currentTime = SystemClock.uptimeMillis();
             if (spinStartTime < 0) {
                 spinStartTime = currentTime;
+                if (isVisible()) {
+                    if (iconState.pulse) {
+                        scheduleSelf(invalidateRunnable, currentTime + ROTATION_PULSE_DURATION);
+                    } else {
+                        invalidateSelf();
+                    }
+                }
             } else {
-                float rotation = (currentTime - spinStartTime) /
-                        (float) ROTATION_DURATION * 360f;
+                boolean isVisible = isVisible();
+                long timeElapsed = currentTime - spinStartTime;
+                float rotation;
+                if (iconState.pulse) {
+                    rotation = timeElapsed / (float) ROTATION_PULSE_DURATION;
+                    if (isVisible) {
+                        scheduleSelf(invalidateRunnable, currentTime +
+                                (timeElapsed * (int) (rotation + 1)));
+                    }
+                    rotation = ((int) Math.floor(rotation)) * 360f / ROTATION_PULSES;
+                } else {
+                    rotation = timeElapsed / (float) ROTATION_DURATION * 360f;
+                    if (isVisible) {
+                        invalidateSelf();
+                    }
+                }
                 canvas.rotate(rotation, centerX, centerY);
             }
             if (isVisible()) {
@@ -411,6 +452,9 @@ public final class IconDrawable extends Drawable implements Animatable {
     public void start() {
         if (!iconState.spinning) {
             iconState.spinning = true;
+            if (iconState.pulse && invalidateRunnable == null) {
+                invalidateRunnable = new InvalidateRunnable();
+            }
             invalidateSelf();
         }
     }
@@ -419,6 +463,10 @@ public final class IconDrawable extends Drawable implements Animatable {
     public void stop() {
         if (iconState.spinning) {
             iconState.spinning = false;
+            if (invalidateRunnable != null) {
+                unscheduleSelf(invalidateRunnable);
+                invalidateRunnable = null;
+            }
         }
     }
 
@@ -434,6 +482,8 @@ public final class IconDrawable extends Drawable implements Animatable {
             if (changed) {
                 if (visible) {
                     invalidateSelf();
+                } else if (invalidateRunnable != null) {
+                    unscheduleSelf(invalidateRunnable);
                 }
             } else {
                 if (restart && visible) {
@@ -442,6 +492,13 @@ public final class IconDrawable extends Drawable implements Animatable {
             }
         }
         return changed;
+    }
+
+    private class InvalidateRunnable implements Runnable {
+        @Override
+        public void run() {
+            invalidateSelf();
+        }
     }
 
     @Override
@@ -483,6 +540,7 @@ public final class IconDrawable extends Drawable implements Animatable {
         PorterDuff.Mode tintMode = DEFAULT_TINT_MODE;
         Paint.Style style = Paint.Style.FILL;
         boolean spinning;
+        boolean pulse;
         int changingConfigurations;
 
         IconState(Icon icon) {
@@ -501,6 +559,7 @@ public final class IconDrawable extends Drawable implements Animatable {
             tintMode = state.tintMode;
             style = state.style;
             spinning = state.spinning;
+            pulse = state.pulse;
             changingConfigurations = state.changingConfigurations;
         }
 

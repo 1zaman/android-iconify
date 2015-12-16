@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import com.joanzapata.iconify.Icon;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.R;
+import com.joanzapata.iconify.internal.Animation;
 
 public class IconImageButton extends ImageButton {
 
@@ -34,8 +35,14 @@ public class IconImageButton extends ImageButton {
         String iconKey = a.getString(R.styleable.IconImageView_iconName);
         if (iconKey != null) {
             IconDrawable drawable = new IconDrawable(context, iconKey);
-            if (a.getBoolean(R.styleable.IconImageView_iconSpin, false)) {
-                drawable.spin();
+            switch (Animation.values()[a.getInt(R.styleable.IconImageView_iconAnimation,
+                    Animation.NONE.ordinal())]) {
+                case SPIN:
+                    drawable.spin();
+                    break;
+                case PULSE:
+                    drawable.pulse();
+                    break;
             }
             setImageDrawable(drawable);
         }
@@ -81,18 +88,24 @@ public class IconImageButton extends ImageButton {
         super.setImageDrawable(drawable);
     }
 
-    public void setIconSpinning(boolean spin) {
-        setIconSpinning(spin, false);
+    public void setIconAnimation(Animation animation) {
+        setIconAnimation(animation, false);
     }
 
-    public void setIconSpinning(boolean spin, boolean restart) {
+    public void setIconAnimation(Animation animation, boolean restart) {
         Drawable drawable = getDrawable();
         if (drawable instanceof IconDrawable) {
             IconDrawable iconDrawable = (IconDrawable) drawable;
-            if (spin) {
-                iconDrawable.start();
-            } else {
-                iconDrawable.stop();
+            switch (animation) {
+                case SPIN:
+                    iconDrawable.spin();
+                    break;
+                case PULSE:
+                    iconDrawable.pulse();
+                    break;
+                case NONE:
+                    iconDrawable.stop();
+                    break;
             }
             if (restart && getVisibility() == VISIBLE) {
                 iconDrawable.setVisible(true, true);
