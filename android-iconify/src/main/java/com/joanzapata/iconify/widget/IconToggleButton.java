@@ -4,11 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ToggleButton;
 import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.internal.HasOnViewAttachListener;
 
-public class IconToggleButton extends ToggleButton implements HasOnViewAttachListener {
-
-    private HasOnViewAttachListenerDelegate delegate;
+public class IconToggleButton extends ToggleButton {
 
     public IconToggleButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -31,25 +28,6 @@ public class IconToggleButton extends ToggleButton implements HasOnViewAttachLis
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-        super.setText(Iconify.compute(getContext(), text, this), BufferType.NORMAL);
+        super.setText(Iconify.compute(this, text), BufferType.NORMAL);
     }
-
-    @Override
-    public void setOnViewAttachListener(HasOnViewAttachListener.OnViewAttachListener listener) {
-        if (delegate == null) delegate = new HasOnViewAttachListenerDelegate(this);
-        delegate.setOnViewAttachListener(listener);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        delegate.onAttachedToWindow();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        delegate.onDetachedFromWindow();
-    }
-
 }

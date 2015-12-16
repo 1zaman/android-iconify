@@ -4,9 +4,9 @@ import com.joanzapata.iconify.Icon;
 
 public enum SimpleLineIconsIcons implements Icon {
     icon_user_female('\ue000'),
-    icon_user_follow('\ue002'),
-    icon_user_following('\ue003'),
-    icon_user_unfollow('\ue004'),
+    icon_user_follow('\ue002', false),
+    icon_user_following('\ue003', false),
+    icon_user_unfollow('\ue004', false),
     icon_trophy('\ue006'),
     icon_screen_smartphone('\ue010'),
     icon_screen_desktop('\ue011'),
@@ -23,20 +23,20 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_credit_card('\ue025'),
     icon_chemistry('\ue026'),
     icon_user('\ue005'),
-    icon_speedometer('\ue007'),
-    icon_social_youtube('\ue008'),
-    icon_social_twitter('\ue009'),
-    icon_social_tumblr('\ue00a'),
-    icon_social_facebook('\ue00b'),
-    icon_social_dropbox('\ue00c'),
-    icon_social_dribbble('\ue00d'),
+    icon_speedometer('\ue007', false),
+    icon_social_youtube('\ue008', false),
+    icon_social_twitter('\ue009', false),
+    icon_social_tumblr('\ue00a', false),
+    icon_social_facebook('\ue00b', false),
+    icon_social_dropbox('\ue00c', false),
+    icon_social_dribbble('\ue00d', false),
     icon_shield('\ue00e'),
     icon_screen_tablet('\ue00f'),
     icon_magic_wand('\ue017'),
     icon_hourglass('\ue018'),
     icon_graduation('\ue019'),
     icon_ghost('\ue01a'),
-    icon_game_controller('\ue01b'),
+    icon_game_controller('\ue01b', false),
     icon_fire('\ue01c'),
     icon_eyeglasses('\ue01d'),
     icon_envelope_open('\ue01e'),
@@ -48,9 +48,9 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_vector('\ue02b'),
     icon_speech('\ue02c'),
     icon_puzzle('\ue02d'),
-    icon_printer('\ue02e'),
+    icon_printer('\ue02e', false),
     icon_present('\ue02f'),
-    icon_playlist('\ue030'),
+    icon_playlist('\ue030', false),
     icon_pin('\ue031'),
     icon_picture('\ue032'),
     icon_map('\ue033'),
@@ -70,12 +70,12 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_directions('\ue041'),
     icon_direction('\ue042'),
     icon_diamond('\ue043'),
-    icon_cup('\ue044'),
+    icon_cup('\ue044', false),
     icon_compass('\ue045'),
     icon_call_out('\ue046'),
     icon_call_in('\ue047'),
     icon_call_end('\ue048'),
-    icon_calculator('\ue049'),
+    icon_calculator('\ue049', false),
     icon_bubbles('\ue04a'),
     icon_briefcase('\ue04b'),
     icon_book_open('\ue04c'),
@@ -91,16 +91,16 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_support('\ue056'),
     icon_size_fullscreen('\ue057'),
     icon_size_actual('\ue058'),
-    icon_shuffle('\ue059'),
+    icon_shuffle('\ue059', false),
     icon_share_alt('\ue05a'),
     icon_share('\ue05b'),
     icon_rocket('\ue05c'),
     icon_question('\ue05d'),
     icon_pie_chart('\ue05e'),
-    icon_pencil('\ue05f'),
-    icon_note('\ue060'),
-    icon_music_tone_alt('\ue061'),
-    icon_music_tone('\ue062'),
+    icon_pencil('\ue05f', false),
+    icon_note('\ue060', false),
+    icon_music_tone_alt('\ue061', false),
+    icon_music_tone('\ue062', false),
     icon_microphone('\ue063'),
     icon_loop('\ue064'),
     icon_logout('\ue065'),
@@ -112,13 +112,13 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_graph('\ue06b'),
     icon_equalizer('\ue06c'),
     icon_dislike('\ue06d'),
-    icon_cursor('\ue06e'),
-    icon_control_start('\ue06f'),
-    icon_control_rewind('\ue070'),
-    icon_control_play('\ue071'),
-    icon_control_pause('\ue072'),
-    icon_control_forward('\ue073'),
-    icon_control_end('\ue074'),
+    icon_cursor('\ue06e', false),
+    icon_control_start('\ue06f', false),
+    icon_control_rewind('\ue070', false),
+    icon_control_play('\ue071', false),
+    icon_control_pause('\ue072', false),
+    icon_control_forward('\ue073', false),
+    icon_control_end('\ue074', false),
     icon_calendar('\ue075'),
     icon_bulb('\ue076'),
     icon_bar_chart('\ue077'),
@@ -130,8 +130,8 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_bubble('\ue07d'),
     icon_camcorder('\ue07e'),
     icon_camera('\ue07f'),
-    icon_check('\ue080'),
-    icon_clock('\ue081'),
+    icon_check('\ue080', false),
+    icon_clock('\ue081', false),
     icon_close('\ue082'),
     icon_cloud_download('\ue083'),
     icon_cloud_upload('\ue084'),
@@ -141,14 +141,14 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_flag('\ue088'),
     icon_folder('\ue089'),
     icon_heart('\ue08a'),
-    icon_info('\ue08b'),
-    icon_key('\ue08c'),
+    icon_info('\ue08b', false),
+    icon_key('\ue08c', false),
     icon_link('\ue08d'),
     icon_lock('\ue08e'),
     icon_lock_open('\ue08f'),
-    icon_magnifier('\ue090'),
-    icon_magnifier_add('\ue091'),
-    icon_magnifier_remove('\ue092'),
+    icon_magnifier('\ue090', false),
+    icon_magnifier_add('\ue091', false),
+    icon_magnifier_remove('\ue092', false),
     icon_paper_clip('\ue093'),
     icon_paper_plane('\ue094'),
     icon_plus('\ue095'),
@@ -166,10 +166,16 @@ public enum SimpleLineIconsIcons implements Icon {
     icon_volume_off('\ue0a1'),
     icon_users('\ue001');
 
-    char character;
+    private final char character;
+    private final boolean supportsRtl;
 
     SimpleLineIconsIcons(char character) {
+        this(character, true);
+    }
+
+    SimpleLineIconsIcons(char character, boolean supportsRtl) {
         this.character = character;
+        this.supportsRtl = supportsRtl;
     }
 
     @Override
@@ -180,5 +186,10 @@ public enum SimpleLineIconsIcons implements Icon {
     @Override
     public char character() {
         return character;
+    }
+
+    @Override
+    public boolean supportsRtl() {
+        return supportsRtl;
     }
 }

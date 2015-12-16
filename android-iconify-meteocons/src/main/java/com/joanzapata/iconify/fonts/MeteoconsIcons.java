@@ -47,14 +47,20 @@ public enum MeteoconsIcons implements Icon {
     mc_cloud_double_thunder('&'),
     mc_thermometer('\''),
     mc_compass('('),
-    mc_not_applicable(')'),
-    mc_celsius('*'),
-    mc_fahrenheit('+');
+    mc_not_applicable(')', false),
+    mc_celsius('*', false),
+    mc_fahrenheit('+', false);
 
-    char character;
+    private final char character;
+    private final boolean supportsRtl;
 
     MeteoconsIcons(char character) {
+        this(character, true);
+    }
+
+    MeteoconsIcons(char character, boolean supportsRtl) {
         this.character = character;
+        this.supportsRtl = supportsRtl;
     }
 
     @Override
@@ -65,5 +71,10 @@ public enum MeteoconsIcons implements Icon {
     @Override
     public char character() {
         return character;
+    }
+
+    @Override
+    public boolean supportsRtl() {
+        return supportsRtl;
     }
 }

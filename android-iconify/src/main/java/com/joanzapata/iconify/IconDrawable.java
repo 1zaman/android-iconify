@@ -17,10 +17,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextPaint;
+import android.util.LayoutDirection;
 import android.util.StateSet;
 import android.util.TypedValue;
+import android.view.View;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.os.Build.VERSION_CODES.M;
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
+import static android.view.View.LAYOUT_DIRECTION_RTL;
 
 /**
  * Embed an icon into a Drawable that can be used as TextView icons, or ActionBar icons.
@@ -281,6 +287,11 @@ public final class IconDrawable extends Drawable implements Animatable {
     @Override
     public void draw(Canvas canvas) {
         canvas.save();
+        final boolean needMirroring = needMirroring();
+        if (needMirroring) {
+            canvas.translate(getBounds().width(), 0);
+            canvas.scale(-1.0f, 1.0f);
+        }
         if (iconState.spinning) {
             long currentTime = SystemClock.uptimeMillis();
             if (spinStartTime < 0) {
@@ -449,6 +460,43 @@ public final class IconDrawable extends Drawable implements Animatable {
     }
 
     @Override
+    public void setAutoMirrored(boolean mirrored) {
+        if (SDK_INT >= JELLY_BEAN_MR1 && iconState.icon.supportsRtl() &&
+                iconState.autoMirrored != mirrored) {
+            iconState.autoMirrored = mirrored;
+            invalidateSelf();
+        }
+    }
+
+    @Override
+    public final boolean isAutoMirrored() {
+        return iconState.autoMirrored;
+    }
+
+    // Since the auto-mirrored state is only set to true if the SDK
+    // version supports it, we don't need an explicit check for that
+    // before calling getLayoutDirection().
+    @TargetApi(JELLY_BEAN_MR1)
+    private boolean needMirroring() {
+        if (isAutoMirrored()) {
+            if (SDK_INT >= M) {
+                return getLayoutDirection() == LayoutDirection.RTL;
+            }
+            // Since getLayoutDirection() is hidden prior to Marshmallow, we
+            // will try to get the layout direction from the View, which we will
+            // assume is set as the callback. As the setLayoutDirection() method
+            // is also hidden, we can safely rely on the behaviour of the
+            // platform Views to provide a correct replacement for the hidden
+            // method.
+            Callback callback = getCallback();
+            if (callback instanceof View) {
+                return ((View) callback).getLayoutDirection() == LAYOUT_DIRECTION_RTL;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void start() {
         if (!iconState.spinning) {
             iconState.spinning = true;
@@ -541,10 +589,12 @@ public final class IconDrawable extends Drawable implements Animatable {
         Paint.Style style = Paint.Style.FILL;
         boolean spinning;
         boolean pulse;
+        boolean autoMirrored;
         int changingConfigurations;
 
         IconState(Icon icon) {
             this.icon = icon;
+            autoMirrored = SDK_INT >= JELLY_BEAN_MR1 && icon.supportsRtl();
         }
 
         IconState(IconState state) {
@@ -560,6 +610,7 @@ public final class IconDrawable extends Drawable implements Animatable {
             style = state.style;
             spinning = state.spinning;
             pulse = state.pulse;
+            autoMirrored = state.autoMirrored;
             changingConfigurations = state.changingConfigurations;
         }
 

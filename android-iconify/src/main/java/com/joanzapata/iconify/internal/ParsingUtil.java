@@ -3,13 +3,11 @@ package com.joanzapata.iconify.internal;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.TypedValue;
 import android.widget.TextView;
 import com.joanzapata.iconify.Icon;
-import com.joanzapata.iconify.internal.HasOnViewAttachListener.OnViewAttachListener;
 
 import java.util.List;
 
@@ -21,85 +19,20 @@ public final class ParsingUtil {
     private ParsingUtil() {}
 
     public static CharSequence parse(
-            Context context,
+            TextView targetView,
             List<IconFontDescriptorWrapper> iconFontDescriptors,
-            CharSequence text,
-            final TextView target) {
-        context = context.getApplicationContext();
-
-        // Analyse the text and replace {} blocks with the appropriate character
-        // Retain all transformations in the accumulator
+            CharSequence text) {
         final SpannableStringBuilder spannableBuilder = new SpannableStringBuilder(text);
-        recursivePrepareSpannableIndexes(context,
+        recursivePrepareSpannableIndexes(targetView,
                 text.toString(), spannableBuilder,
                 iconFontDescriptors, 0);
-        final Animation animation = getSpansAnimation(spannableBuilder);
-
-        // If animated, periodically invalidate the TextView so that the
-        // CustomTypefaceSpan can redraw itself
-        if (animation != Animation.NONE) {
-            if (target == null)
-                throw new IllegalArgumentException("You can't use \"" + animation.getToken() +
-                        "\" without providing the target TextView.");
-            if (!(target instanceof HasOnViewAttachListener))
-                throw new IllegalArgumentException(target.getClass().getSimpleName() + " does not implement " +
-                        "HasOnViewAttachListener. Please use IconTextView, IconButton or IconToggleButton.");
-
-            ((HasOnViewAttachListener) target).setOnViewAttachListener(new OnViewAttachListener() {
-                boolean isAttached = false;
-
-                @Override
-                public void onAttach() {
-                    isAttached = true;
-                    ViewCompat.postOnAnimation(target, new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isAttached) {
-                                target.invalidate();
-                                switch (animation) {
-                                    case SPIN:
-                                        ViewCompat.postOnAnimation(target, this);
-                                        break;
-                                    case PULSE:
-                                        ViewCompat.postOnAnimationDelayed(target, this, CustomTypefaceSpan.ROTATION_PULSES);
-                                        break;
-                                }
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void onDetach() {
-                    isAttached = false;
-                }
-            });
-
-        } else if (target instanceof HasOnViewAttachListener) {
-            ((HasOnViewAttachListener) target).setOnViewAttachListener(null);
-        }
-
         return spannableBuilder;
     }
 
-    private static Animation getSpansAnimation(SpannableStringBuilder spannableBuilder) {
-        Animation animation = Animation.NONE;
-        CustomTypefaceSpan[] spans = spannableBuilder.getSpans(0, spannableBuilder.length(), CustomTypefaceSpan.class);
-        for (CustomTypefaceSpan span : spans) {
-            Animation spanAnimation = span.getAnimation();
-            // Return the animation with the highest refresh rate
-            if (spanAnimation != Animation.NONE) {
-                animation = spanAnimation;
-                if (animation == Animation.SPIN) {
-                    break;
-                }
-            }
-        }
-        return animation;
-    }
-
+    // Analyse the text and replace {} blocks with the appropriate character
+    // Retain all transformations in the accumulator
     private static void recursivePrepareSpannableIndexes(
-            Context context,
+            TextView targetView,
             String fullText,
             SpannableStringBuilder text,
             List<IconFontDescriptorWrapper> iconFontDescriptors,
@@ -127,11 +60,12 @@ public final class ParsingUtil {
 
         // If no match, ignore and continue
         if (icon == null) {
-            recursivePrepareSpannableIndexes(context, fullText, text, iconFontDescriptors, endIndex);
+            recursivePrepareSpannableIndexes(targetView, fullText, text, iconFontDescriptors, endIndex);
             return;
         }
 
         // See if any more stroke within {} should be applied
+        Context context = targetView.getContext();
         float iconSizePx = -1;
         int iconColor = Integer.MAX_VALUE;
         float iconSizeRatio = -1;
@@ -192,12 +126,12 @@ public final class ParsingUtil {
 
         // Replace the character and apply the typeface
         text = text.replace(startIndex, endIndex, "" + icon.character());
-        text.setSpan(new CustomTypefaceSpan(icon,
+        text.setSpan(new CustomTypefaceSpan(targetView, icon,
                         iconFontDescriptor.getTypeface(context),
                         iconSizePx, iconSizeRatio, iconColor, animation, baselineAligned),
                 startIndex, startIndex + 1,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        recursivePrepareSpannableIndexes(context, fullText, text, iconFontDescriptors, startIndex);
+        recursivePrepareSpannableIndexes(targetView, fullText, text, iconFontDescriptors, startIndex);
     }
 
     public static float getPxFromDimen(Context context, String packageName, String resName) {

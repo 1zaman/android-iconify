@@ -11,4 +11,7 @@ public interface Icon {
     /** The character matching the key in the font, for example '\u4354' */
     char character();
 
+    /** Whether the icon can be mirrored in RTL mode */
+    boolean supportsRtl();
+
 }

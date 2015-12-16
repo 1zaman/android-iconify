@@ -110,8 +110,8 @@ public enum WeathericonsIcons implements Icon {
     wi_storm_warning('\uf0ce'),
     wi_hurricane_warning('\uf0cf'),
     wi_alien('\uf075'),
-    wi_celsius('\uf03c'),
-    wi_fahrenheit('\uf045'),
+    wi_celsius('\uf03c', false),
+    wi_fahrenheit('\uf045', false),
     wi_degrees('\uf042'),
     wi_thermometer('\uf055'),
     wi_thermometer_exterior('\uf053'),
@@ -128,9 +128,9 @@ public enum WeathericonsIcons implements Icon {
     wi_refresh('\uf04c'),
     wi_refresh_alt('\uf04b'),
     wi_umbrella('\uf084'),
-    wi_barometer('\uf079'),
+    wi_barometer('\uf079', false),
     wi_humidity('\uf07a'),
-    wi_na('\uf07b'),
+    wi_na('\uf07b', false),
     wi_train('\uf0cb'),
     wi_moon_new('\uf095'),
     wi_moon_waxing_cresent_1('\uf096'),
@@ -158,39 +158,39 @@ public enum WeathericonsIcons implements Icon {
     wi_moon_waning_crescent_4('\uf0ae'),
     wi_moon_waning_crescent_5('\uf0af'),
     wi_moon_waning_crescent_6('\uf0b0'),
-    wi_time_1('\uf08a'),
-    wi_time_2('\uf08b'),
-    wi_time_3('\uf08c'),
-    wi_time_4('\uf08d'),
-    wi_time_5('\uf08e'),
-    wi_time_6('\uf08f'),
-    wi_time_7('\uf090'),
-    wi_time_8('\uf091'),
-    wi_time_9('\uf092'),
-    wi_time_10('\uf093'),
-    wi_time_11('\uf094'),
-    wi_time_12('\uf089'),
-    wi_direction_up('\uf058'),
-    wi_direction_up_right('\uf057'),
-    wi_direction_right('\uf04d'),
-    wi_direction_down_right('\uf088'),
-    wi_direction_down('\uf044'),
-    wi_direction_down_left('\uf043'),
-    wi_direction_left('\uf048'),
-    wi_direction_up_left('\uf087'),
-    wi_wind_beaufort_0('\uf0b7'),
-    wi_wind_beaufort_1('\uf0b8'),
-    wi_wind_beaufort_2('\uf0b9'),
-    wi_wind_beaufort_3('\uf0ba'),
-    wi_wind_beaufort_4('\uf0bb'),
-    wi_wind_beaufort_5('\uf0bc'),
-    wi_wind_beaufort_6('\uf0bd'),
-    wi_wind_beaufort_7('\uf0be'),
-    wi_wind_beaufort_8('\uf0bf'),
-    wi_wind_beaufort_9('\uf0c0'),
-    wi_wind_beaufort_10('\uf0c1'),
-    wi_wind_beaufort_11('\uf0c2'),
-    wi_wind_beaufort_12('\uf0c3'),
+    wi_time_1('\uf08a', false),
+    wi_time_2('\uf08b', false),
+    wi_time_3('\uf08c', false),
+    wi_time_4('\uf08d', false),
+    wi_time_5('\uf08e', false),
+    wi_time_6('\uf08f', false),
+    wi_time_7('\uf090', false),
+    wi_time_8('\uf091', false),
+    wi_time_9('\uf092', false),
+    wi_time_10('\uf093', false),
+    wi_time_11('\uf094', false),
+    wi_time_12('\uf089', false),
+    wi_direction_up('\uf058', false),
+    wi_direction_up_right('\uf057', false),
+    wi_direction_right('\uf04d', false),
+    wi_direction_down_right('\uf088', false),
+    wi_direction_down('\uf044', false),
+    wi_direction_down_left('\uf043', false),
+    wi_direction_left('\uf048', false),
+    wi_direction_up_left('\uf087', false),
+    wi_wind_beaufort_0('\uf0b7', false),
+    wi_wind_beaufort_1('\uf0b8', false),
+    wi_wind_beaufort_2('\uf0b9', false),
+    wi_wind_beaufort_3('\uf0ba', false),
+    wi_wind_beaufort_4('\uf0bb', false),
+    wi_wind_beaufort_5('\uf0bc', false),
+    wi_wind_beaufort_6('\uf0bd', false),
+    wi_wind_beaufort_7('\uf0be', false),
+    wi_wind_beaufort_8('\uf0bf', false),
+    wi_wind_beaufort_9('\uf0c0', false),
+    wi_wind_beaufort_10('\uf0c1', false),
+    wi_wind_beaufort_11('\uf0c2', false),
+    wi_wind_beaufort_12('\uf0c3', false),
     wi_yahoo_0('\uf056'),
     wi_yahoo_1('\uf00e'),
     wi_yahoo_2('\uf073'),
@@ -516,10 +516,16 @@ public enum WeathericonsIcons implements Icon {
     wi_owm_night_906('\uf024'),
     wi_owm_night_957('\uf050');
 
-    char character;
+    private final char character;
+    private final boolean supportsRtl;
 
     WeathericonsIcons(char character) {
+        this(character, true);
+    }
+
+    WeathericonsIcons(char character, boolean supportsRtl) {
         this.character = character;
+        this.supportsRtl = supportsRtl;
     }
 
     @Override
@@ -530,5 +536,10 @@ public enum WeathericonsIcons implements Icon {
     @Override
     public char character() {
         return character;
+    }
+
+    @Override
+    public boolean supportsRtl() {
+        return supportsRtl;
     }
 }

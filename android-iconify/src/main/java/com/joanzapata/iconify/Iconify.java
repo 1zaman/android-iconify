@@ -1,6 +1,5 @@
 package com.joanzapata.iconify;
 
-import android.content.Context;
 import android.widget.TextView;
 import com.joanzapata.iconify.internal.IconFontDescriptorWrapper;
 import com.joanzapata.iconify.internal.ParsingUtil;
@@ -32,7 +31,7 @@ public class Iconify {
     public static void addIcons(TextView... textViews) {
         for (TextView textView : textViews) {
             if (textView == null) continue;
-            textView.setText(compute(textView.getContext(), textView.getText(), textView));
+            textView.setText(compute(textView, textView.getText()));
         }
     }
 
@@ -51,12 +50,8 @@ public class Iconify {
 
     }
 
-    public static CharSequence compute(Context context, CharSequence text) {
-        return compute(context, text, null);
-    }
-
-    public static CharSequence compute(Context context, CharSequence text, TextView target) {
-        return ParsingUtil.parse(context, iconFontDescriptors, text, target);
+    public static CharSequence compute(TextView targetView, CharSequence text) {
+        return ParsingUtil.parse(targetView, iconFontDescriptors, text);
     }
 
     /**

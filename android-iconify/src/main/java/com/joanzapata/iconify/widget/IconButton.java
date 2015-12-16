@@ -4,11 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Button;
 import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.internal.HasOnViewAttachListener;
 
-public class IconButton extends Button implements HasOnViewAttachListener {
-
-    private HasOnViewAttachListenerDelegate delegate;
+public class IconButton extends Button {
 
     public IconButton(Context context) {
         super(context);
@@ -31,25 +28,6 @@ public class IconButton extends Button implements HasOnViewAttachListener {
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-        super.setText(Iconify.compute(getContext(), text, this), type);
-    }
-
-
-    @Override
-    public void setOnViewAttachListener(HasOnViewAttachListener.OnViewAttachListener listener) {
-        if (delegate == null) delegate = new HasOnViewAttachListenerDelegate(this);
-        delegate.setOnViewAttachListener(listener);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        delegate.onAttachedToWindow();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        delegate.onDetachedFromWindow();
+        super.setText(Iconify.compute(this, text), type);
     }
 }
